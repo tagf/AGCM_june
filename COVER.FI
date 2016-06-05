@@ -1,0 +1,6 @@
+      COMMON /COVER/
+     1     ALBDOA(74),ABSVTY(74),ALBDOS(74),
+     1     ALBDAL(74),ABSVYL(74),ALBDSL(74),
+     3     CLR(74),CLRL(74),PCL(74),PCLR(74),PCLRL(74),
+     4     PCLL(74),RWC(74),RWCL(74)
+C

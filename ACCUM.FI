@@ -1,0 +1,16 @@
+C
+C        ACCUMULATED VARIABLES IN COMMON
+C
+      COMMON /ACCUM/ APLS(72,46),APCV(72,46),ASNF(72,46),
+     1               ACNO(72,46),ACNS(72,46),ACBS(72,46),
+     2               ACBA(72,46),ABEA(72,46),ASCZ(72,46),
+     3               ARET(72,46),ASLP(72,46),AT4(72,46),ZONAVG(46,74)
+         COMMON /ACCUM1/ PACC(72,46),UACC(72,46,2),VACC(72,46,2),
+     1                   TACC(72,46,2 ),QWACC(72,46,2),GWACC(72,46),
+     2                   GTACC(72,46),SNOACC(72,46),TSACC(72,46),
+     3                   SDACC(72,46),TAUUAC(72,46),TAUVAC(72,46),
+     4                   APRES(72,46),ACLOUD(72,46)
+       dimension zero(12*72+74,46)
+       equivalence (apls(1,1),zero(1,1))
+       dimension zero1(18*72,46)
+       equivalence (zero1(1,1),pacc(1,1))

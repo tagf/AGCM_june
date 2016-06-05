@@ -1,0 +1,6 @@
+C
+C        ACCUMULATED ICE VARIABLES IN COMMON
+C
+      COMMON /ACC_ice/ hIceAcc(72,46),GIceCompAcc(72,46)
+       dimension zeroIce(72*2,46)
+       equivalence (hIceAcc(1,1),zeroIce(1,1))

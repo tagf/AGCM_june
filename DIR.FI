@@ -1,0 +1,3 @@
+	 COMMON/DataDir/ WorkDir, BaseDir
+         character*8 WorkDir
+	   character*25 BaseDir

@@ -1,0 +1,1 @@
+      COMMON /STATICE/ xIce(14,5), ipoint(5),jpoint(5)

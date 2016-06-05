@@ -1,0 +1,2 @@
+      integer    Niz,Njz
+      parameter (Niz=72,Njz=46)

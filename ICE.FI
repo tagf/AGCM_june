@@ -1,0 +1,16 @@
+      COMMON /ICE/ GHIce(74,46), GHIce2(74,46), GIceComp(74,46)
+     1 , GIcePool(74,46), GIce2Pool(74,46), GIceHeatng(74,46)
+     2 , GIce2Heatng(74,46), GIceCND(74,46), GIce2CND(74,46)
+     3 , GIceUpFlow(74,46), GT1(74,46), GT2(74,46)
+	4 , SnoAmt1(74,46), SnoAmt2(74,46)
+     5 , CTYSN, ROSN , QIce, QSnow, QWater, CTWater
+     6 , HActWater, GIceCompMin, GIceCompMax, GIWExchage
+     7 , HIceMin, HIceThin, GIcePoolMaxPercent, GIceSThruPercent
+     8 , DiagFlow1(74,46), DiagFlow2(74,46), DiagFlow3(74,46)
+     9 , DiagFlow4(74,46), DiagFlow5(74,46), DiagFlow6(74,46)
+	1 , NewIce(74,46), SETICE(74,46), iGIceFreezeCount(74,46)
+	2 , Ibreak, Jbreak, CalcWind, FixedWater, FixedIceBorder
+     3 , iDaysToFreeze
+
+      LOGICAL SETICE, NewIce, FixedWater, FixedIceBorder, CalcWind
+	INTEGER Ibreak, Jbreak, iDaysToFreeze

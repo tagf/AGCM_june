@@ -1,0 +1,9 @@
+subroutine  gldstn(first_gldstn, have_TS_atm, sdedy_oc,ts_oc_for_atm,TS_atm_for_oc)
+first_gldstn - true при первом вызове GLDSTN
+have_TS_atm - true если уже было вычисление TS_atm 
+sdedy_oc - день года из GLDSTN
+ts_oc_for_atm - SST из GLDSTN для AGCM
+TS_atm_for_oc - T атм из AGCM для GLDSTN
+
+
+TS_AGCM - средняя за сутки T атм из AGCM
