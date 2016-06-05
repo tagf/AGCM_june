@@ -88,7 +88,7 @@ c  98  FORMAT(30X,'********  ZONAL  MEANS ***********')
  9999 FORMAT(' TIME ',F9.2,2X,I3,1H/,I2,1H/,F6.2,3H.00,5X,5HK.E.=,
      1 1PE15.7,3H T=,1PE15.7,4H N0=,1PE15.7,'  SDEDY=',I3,' ID=',A4)
       do 2 j=1,46
-      write (Lun,95) 90-4*(j-1),J,(ZONAV1(J,I),I=1,62),AN0(J),ALFAP(J),
+      write (Lun,95) -90+4*(j-1),J,(ZONAV1(J,I),I=1,62),AN0(J),ALFAP(J),
      1         ANS(J),BS(J)
   2   continue
       close (Lun)

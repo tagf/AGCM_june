@@ -567,7 +567,6 @@ C
       rrr(33,44)=rrr(35,44)
       rrr(34,44)=rrr(35,44)
       GT(2:73,:)=rrr(1:72,:)
-       write(929,'(72F10.4)') ((GTrrr(i,j)-GT(i,j),i=2,73),j=1,46)
   40  continue
 C
       DO 5 J=1,JM

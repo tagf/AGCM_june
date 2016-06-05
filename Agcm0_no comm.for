@@ -62,8 +62,10 @@ cIIIIIIIIIIIIIIIIIIIIIIIIIII
       include 'StatIce.fi'
 cIIIIIIIIIIIIIIIIIIIIIIIIIII
 	!include 'varAGCM.f90' 
-	     real  TS_atm_for_oc(0:72+1,0:72+1), QS_atm_for_oc(0:72+1,0:72+1),
-     1         PREC_atm_for_oc(0:72+1,0:72+1)  
+      integer maxi,maxj
+      parameter ( maxi = 72 , maxj =  72)
+	     real  TS_atm_for_oc(1:maxi,0:maxj), QS_atm_for_oc(1:maxi,0:maxj),
+     1         PREC_atm_for_oc(1:maxi,0:maxj)  
         common /varsAGCM/  TS_atm_for_oc, QS_atm_for_oc, PREC_atm_for_oc
         
          COMMON /OSA/ QSN(72,46),TXN(72,46),TYN(72,46)
@@ -79,11 +81,11 @@ c        For program execution time
       INTEGER day10, iTime,NF, sdedy_oc
       !GLD GGGGGGGGG 
       ! SST from GLDSTN, air temp from AGCM 
-      real ts_oc_for_atm(0:72+1,0:72+1),TS_AGCM(1:74,1:46),
+      real ts_oc_for_atm(0:maxi+1,0:maxj+1),TS_AGCM(1:74,1:46),
      1     QS_AGCM(1:74,1:46),PREC_AGCM(1:74,1:46),GT_temp(1:74,1:46)
-     1 ,GT_temp1(1:74,1:46)
+     1    ,GT_temp1(1:74,1:46)
      
-      !// dummy integer  k2(0:72+1,0:72+1)
+      integer  k2(0:72+1,0:72+1)
       
       !GLD GGGGGGGGG 
 c      Dialogue and Setup  
@@ -179,15 +181,15 @@ c********** XOCEAN ***
      1           sdedy_oc,ts_oc_for_atm)
 	    first_gldstn = .false.      !not first call gldstn
          enddo
-	    have_TS_atm  = .true.  !if use TS_atm for GLD atm
+	   have_TS_atm  = .true.  !if use TS_atm for GLD atm
          GT_temp1=GT
-!INTERPOLATE ts_oc_for_atm(72,72) on AGCM grid (72,46)
+!INTERPOLATE ts_oc_for_atm(0:73,0:73) on AGCM grid (72,46)
 !GT_temp(74,46) = ts_oc_for_atm after interpolation 
-!         call Interpol_oc_atm(ts_oc_for_atm, GT_temp, ISFTYP, k2) !old 
-         write(1446,'(74F10.4)') ((ts_oc_for_atm(i,j),i=0,73),j=73,0,-1)
+         write(1446,'(74F10.4)') ((ts_oc_for_atm(i,j),i=0,maxi+1),
+     1                                              j=maxj+1,0,-1)
         call interpolate(ts_oc_for_atm,GT_temp)     !Tagir
 !        call interpolate(ts(1,:,:,kmax),t_AGCM)    !Tagir
-         write(1447,'(74F10.4)') ((GT_temp(i,j),i=1,74),j=46,1,-1) !grad C
+        write(1447,'(74F10.4)')((GT_temp(i,j),i=1,74),j=46,1,-1) !grad C
          do i=2,73
             do j=1,46
              if ((isftyp(i,j).eq.7).and.(GT(i,j).gt.273.1)) then
@@ -266,8 +268,6 @@ C
 ! Q4_AGCM(74,46) - surface air hum in AGCM
 ! TOTALP_AGCM(74,46) - prec in AGCM (g/cm**2)
        n_acc=n_acc+1
- !      TS_AGCM(2:73,1:46) = TS_AGCM(2:73,1:46)+(T(2:73,1:46,2)
- !    1  +TS(2:73,1:46))/2.
       do J=1,46
       do I=2,73
         TS_AGCM(I,J) = TS_AGCM(I,J)+TS(I,J)
@@ -277,7 +277,7 @@ C
        QS_AGCM(2:73,1:46) = QS_AGCM(2:73,1:46)+Q4_AGCM(2:73,1:46)
        PREC_AGCM(2:73,1:46) = PREC_AGCM(2:73,1:46)+
      1                                       TOTALP_AGCM(2:73,1:46)
-       IF (end_of_day) then !day mean values
+      IF (end_of_day) then !day mean values
        TS_AGCM = TS_AGCM/float(n_acc)
        QS_AGCM = QS_AGCM/float(n_acc)
        PREC_AGCM = PREC_AGCM/float(n_acc)*0.01/DTC3  !prec (m/sec)
@@ -293,32 +293,29 @@ C
     !     	call SurFile ('TS_AGCM',TS_AGCM,273.1E0,'TS_AGCM')
     !     	call SurFile ('QS_AGCM',QS_AGCM,0.,'QS_AGCM')
     !     	call SurFile ('PREC_AGCM',PREC_AGCM,0.,'PREC_AGCM')
-!       write(217,'(72F10.4)') ((TS_AGCM(i,j)-273.1,i=1,72),j=1,46)
-!       write(217,'(72F10.4)') ((QS_AGCM(i,j),i=1,72),j=1,46)
-!INTERPOLATE AGCM(72,46) to _atm_for_oc (72,72)
-   !    call Interpol_atm_oc(TS_AGCM, TS_atm_for_oc)  !old
-   !    call Interpol_atm_oc(QS_AGCM, QS_atm_for_oc)  
-   !    call Interpol_atm_oc(PREC_AGCM, PREC_atm_for_oc)  
-   !        write(1449,'(72F10.4)') ((tq(1,i,j),i=1,72),j=1,72)
-      TS_AGCM=TS_AGCM-273.1
-      call interpolate_back(TS_AGCM, TS_atm_for_oc) !  shift
-      call interpolate_back(QS_AGCM, QS_atm_for_oc) !  shift
-      call interpolate_back(PREC_AGCM, PREC_atm_for_oc) !  shift
+!       write(217,'(72F10.4)') ((TS_AGCM(i,j)-273.1,i=2,73),j=1,46)
+!       write(217,'(72F10.4)') ((QS_AGCM(i,j),i=2,73),j=1,46)
+!INTERPOLATE AGCM(2:73,1:46) to _atm_for_oc (maxi,maxj)
+      TS_AGCM(:,:)=0.90*TS_AGCM(:,:)+0.10*T(:,:,2)-273.1
+  !     TS_AGCM(:,:)=TS_AGCM(:,:)-273.1
+      call interpolate_back(TS_AGCM(2:73,:), TS_atm_for_oc) !  shift
+      call interpolate_back(QS_AGCM(2:73,:), QS_atm_for_oc) !  shift
+      call interpolate_back(PREC_AGCM(2:73,:), PREC_atm_for_oc) !  shift
   !     TS_atm_for_oc=TS_atm_for_oc-273.1  ! Kelvin to celsius
-       write(1451,'(74F10.4)') ((TS_atm_for_oc(i,j),i=0,73),j=0,73)
-       write(1452,'(74F10.4)') ((TS_AGCM(i,j),i=1,74),j=1,46)
-       write(1453,'(74F10.4)') ((T(i,j,2)-273.1,i=1,74),j=1,46)
-       write(1454,'(74F10.4)') ((TS(i,j)-273.1,i=1,74),j=1,46)
- !      stop 'TS_atm_for_oc'
-!      open (unit=218,file="TS_atm_for_oc.txt")
- !      write(218,'(72F10.4)') ((TS_atm_for_oc(i,j),i=1,72),j=1,72)
- !     CALL WRITIJ(PREC_AGCM,1.d-5,'pr00',0)
- !     Stop 'TS_AGCM'
+       write(1451,'(72F10.4)') ((TS_atm_for_oc(i,j),i=1,maxi),j=1,maxj)
+       write(1451,*) 
+       write(1452,'(74F10.4)') ((TS_AGCM(i,j),i=1,maxi+2),j=1,46)
+       write(1452,*) 
+       write(1453,'(74F10.4)') ((T(i,j,2)-273.1,i=1,maxi+2),j=1,46)
+       write(1453,*) 
+       write(1454,'(74F10.4)') ((TS(i,j)-273.1,i=1,maxi+2),j=1,46)
+       write(1454,*) 
+
        TS_AGCM = 0.
        QS_AGCM = 0.
        PREC_AGCM = 0.
        n_acc=0
-      endif
+      endif !day mean values
  !GLD GGGGGGGGG
 
       IF (end_of_day) then
@@ -393,7 +390,7 @@ c********** XOCEAN ***
 !       open (unit=225,file="GT2_1.txt")
 !       write(225,'(72F10.4)') ((GT(i,j),i=2,73),j=1,46)
         
-!INTERPOLATE ts_oc_for_atm (72,72) to GT(72,46) 
+!INTERPOLATE ts_oc_for_atm (0:73,0:73) to GT(72,46) 
    !    call Interpol_oc_atm(ts_oc_for_atm, GT_temp, ISFTYP, k2) 
          call interpolate(ts_oc_for_atm,GT_temp)   !Tagir
         do i=2,73
