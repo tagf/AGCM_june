@@ -3,17 +3,17 @@
 ! extra outputs for global version
 
 !	program  gldstn
-	subroutine  gldstn(first_gldstn, have_TS_atm, sdedy_oc,ts_oc_for_atm,k2)
+	subroutine  gldstn(first_gldstn, have_TS_atm, sdedy_oc,ts_oc_for_atm)
 	USE IFPORT	!module to use TIMEF() function (= elapsed_time)
 	include 'var.f90'
 !	include 'varAGCM.f90' 
-	     real  TS_atm_for_oc(0:72+1,0:72+1), QS_atm_for_oc(0:72+1,0:72+1),&
-             PREC_atm_for_oc(0:72+1,0:72+1)  
+	     real  TS_atm_for_oc(1:maxi,1:maxj), QS_atm_for_oc(1:maxi,1:maxj),&
+             PREC_atm_for_oc(1:maxi,1:maxj)  
          common /varsAGCM/  TS_atm_for_oc, QS_atm_for_oc, PREC_atm_for_oc
 	real elapsed_time, elapsed_time0
 	real avn, avs, sum, sums(8*maxl), tv(maxl,maxi,maxj,maxk), rms
 	real sum1, sum2, sum3,sum4,cor, pacsf
-	integer k2(0:maxi+1,0:maxj+1)              !GLD GGGGGGGGGG
+!	integer k1(0:maxi+1,0:maxj+1)              !GLD GGGGGGGGGG
 ! to average osc runs
 ! real ats(maxl,maxi,maxj,maxk), au(3,maxi,maxj,maxk)
 ! 1   , afn(maxl,maxi,maxj,maxk)
@@ -26,7 +26,7 @@
 	real fricU(maxj),fricV(maxj), windu(0:maxi,0:maxj),&
 		windv(0:maxi,0:maxj),height
 
-      real zpsi(0:maxi,0:maxk), zu(maxi,maxk)
+    real zpsi(0:maxi,0:maxk), zu(maxi,maxk)
 
       integer nsteps, npstp, iwstp, itstp, iw, icount,&
            i, j, k, l, istep, iterun, isol, isl, natm,iice,sdeyr0,sdedy_oc
@@ -114,10 +114,10 @@
       if(ans.eq.'n'.or.ans.eq.'N')then  !new run
 ! define an i.c. (initial conditions) done in gset
          read(5,'(a6)')lin
-      else
+      else   !continuing run
          print*,'input file extension for input (a6)'
          read(5,'(a6)')lin
-         lin='w29.3'  !GLD GGGGGGGGG
+ !        lin='w29.7'  !GLD GGGGGGGGG
       print*,lin
          open(1,file=trim(path_results)//lin)
 
@@ -126,9 +126,10 @@
 
          call inm(1)
          close(1)
+
          sdedy_oc=sdedy
          t0 = 0. !Init time
-         t = t0 !Init time
+         t = t0  !Init time
 ! perturb the salinity
 ! print*,'perturbing the i.c.'
 ! do k=10 ,16
@@ -154,7 +155,7 @@
          do j=1,jmax
             do i=1,imax !temp (1) and specific humidity (2) in atm
                tq1(1,i,j) = tq(1,i,j)
-               tq1(2,i,j) = tq(2,i,j)
+      !*****         tq1(2,i,j) = tq(2,i,j)
             enddo
          enddo
 ! EMBM sea-ice
@@ -268,23 +269,30 @@
       icount = 0
 !##########   for year means
 	    i_avr=0
-          tq_avr=0.
+        tq_avr=0.
 	    ice_avr=0.
 !#################
- 123     k2=k1    !globe map
+ 123     k1=k1    !globe map
    if (have_TS_atm) then   !GLD GGGGGGG
-  ! Must be after interpolation: 
+  ! Must be after interpolation:
+  !    call DataForSurAtm('w29','Un',TS_atm_for_oc,'TS_atm')
+   write(1455,'(72F10.4)') ((TS_atm_for_oc(i,j),i=1,maxi),j=maxj,1,-1)!GGGGGGGGGG
+       write(1455,*) 
+   write(1456,'(72F10.4)') ((tq(1,i,j),i=1,maxi),j=maxj,1,-1)!GGGGGGGGGG
+       write(1456,*) 
+   write(144,'(72F10.4)') ((tq(1,i,j)-TS_atm_for_oc(i,j),i=1,maxi),j=maxj,1,-1)!GGGGGGGGGG
+       write(144,*) 
+ !  stop 'SurAtm'
          do j=1,jmax
            do i=1,imax  
-            write (144,*) i,j,tq(1,i,j)-TS_atm_for_oc(i,j),k2(i,j) !GGGGGGGGGG
-    !        write (145,*) i,j,k2(i,j) !GGGGGGGGGG
+    !        write (145,*) i,j,k1(i,j) !GGGGGGGGGG
            tq(1,i,j)=TS_atm_for_oc(i,j) 
            tq(2,i,j)=QS_atm_for_oc(i,j) 
-           pptn(i,j)=PREC_atm_for_oc(i,j) 
+    !       pptn(i,j)=PREC_atm_for_oc(i,j) 
            enddo
          enddo
       ! stop 'tq-ts'  !test difference
-   endif
+   endif  ! have_TS_atm
  ! time loop %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   do istep1=1,1 !****nsteps
       istep=istep+1
@@ -465,11 +473,18 @@
          end_of_day= .true. ! - if dt = 1day!!!!
 
          if (end_of_day) then
-            do j=0,jmax+1
-               do i=0,imax+1
-                ts_oc_for_atm(i,j)=ts(1,i,j,kmax) !GLD GGGGGGGGG
+           if (have_TS_atm) then   !GLD GGGGGGG
+            do j=1,jmax
+               do i=1,imax
+                tq(1,i,j)=TS_atm_for_oc(i,j) !GGGGGGGGGG
+                tq(2,i,j)=QS_atm_for_oc(i,j) !GGGGGGGGGG
                enddo
             enddo
+                     tq1=tq !GGGGGGGGGG
+	      endif  !have_TS_atm
+	      
+          ts_oc_for_atm(:,:)=ts(1,:,:,kmax) !GLD GGGGGGGGG
+          
 	 ! sdedy - day of year
 	 ! SDEYR - year
             call SDET_OC(SCOSZ) !seasonal solar
@@ -522,6 +537,13 @@
             endif 
 	      call diaga
          endif  !npstp
+         
+     !    do j=1,jmax
+     !      do i=1,imax  
+     !       write (1445,*) i,j,ts(1,i,j,kmax),k1(i,j) !GGGGGGGGGG
+     !      enddo
+     !    enddo
+ !      stop 'ts'  !test 
          if(mod(istep,iwstp).eq.0)then
 	goto 999
             ext=conv(mod(iw,10)) !output (after iwstp steps) file number
@@ -532,13 +554,9 @@
                                   !tice(i,j),t after any iwstp steps
             call outm(2)
             close(2)
-
             !#########################
             !Interpolation from ts(1,i,j,kmax) to yatm (74,46)
             ts_oc_for_atm(0:imax+1,0:jmax+1)=ts(1,0:imax+1,0:jmax+1,kmax)
-            call oc_atm(ts_oc_for_atm,yatm,imax,jmax)
-
-            open(57,file=trim(path_results)//lout//'.'//'yoc')
 
 	      do 20 j=1,jmax !write ts as in AGCM
 	       arg=amin1(2./36.*(j-0.5)-1.,1.)
@@ -555,8 +573,8 @@
 	         else
               write(57,1 ) 29+i,5.*asin(arg)
 	         endif
+	         
    20       continue !i
-            close (57) !yoc
             open(58,file=trim(path_results)//lout//'.'//'yatm')
 
    	      do 21 j=1,46 !write interpolated temp for AGCM

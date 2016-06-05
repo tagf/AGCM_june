@@ -557,5 +557,5 @@
 ! diagnostic calculation of global heat source
 
       ghs = 0.
-
+      return
       end

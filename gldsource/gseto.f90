@@ -570,8 +570,8 @@
 ! dztav(1,i,j) = 0.
 ! 1                     /dzz
 ! dztav(2,i,j) = 0.
-   30    continue
-   20 continue
+   30    continue !j
+   20 continue  !i
 
 ! array to determine limit of easy part of double p integral in J term
 ! use integer wet point indicator

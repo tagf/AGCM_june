@@ -62,13 +62,13 @@
 	  plot1(i,jmax+1)=plot1(i,jmax) !north pole
        enddo
        do j=0,jmax+1
-	  k1_mask(0,j)=k1_mask(1,j)  !left border
-	  k1_mask(imax+1,j)=k1_mask(imax,j) ! right border
-	  plot1(0,j)=plot1(1,j)  !left border
-	  plot1(imax+1,j)=plot1(imax,j) ! right border
+	  k1_mask(0,j)=k1_mask(imax,j)  !left border
+	  k1_mask(imax+1,j)=k1_mask(1,j) ! right border
+	  plot1(0,j)=plot1(imax,j)  !left border
+	  plot1(imax+1,j)=plot1(1,j) ! right border
        enddo
 
-      open(20,file=trim(path_results)//lout//'.'//trim(name)//id_mnth)
+      open(20,file=trim(path_results)//lout//'.'//trim(name)//id_mnth,status='REPLACE')
 
       write(20,*) 'gldst: ',trim(name)
       write(6,*) 'gldst: ',trim(name)

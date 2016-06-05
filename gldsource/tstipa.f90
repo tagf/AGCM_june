@@ -13,8 +13,8 @@
 
       include 'var.f90'
 !	include 'varAGCM.f90' 
-	     real  TS_atm_for_oc(0:72+1,0:72+1), QS_atm_for_oc(0:72+1,0:72+1),&
-             PREC_atm_for_oc(0:72+1,0:72+1)  
+	     real  TS_atm_for_oc(1:maxi,0:maxj), QS_atm_for_oc(1:maxi,0:maxj),&
+             PREC_atm_for_oc(1:maxi,0:maxj)  
          common /varsAGCM/  TS_atm_for_oc, QS_atm_for_oc, PREC_atm_for_oc
 
       real tv, ups, ups0, pec, diffpp, cimp, centre, dtloc
@@ -126,9 +126,6 @@
                                   *tq2(i,j+1) - cis(i,j-1)*tq2(i,j-1)) - dtloc*tq2(i,j)*&
                                   ( ciw(i,j) - cie(i-1,j) + cis(i,j) - cin(i,j-1) )
 
-           ! write (113,*) i,j,tq(1,i,j)-TS_atm_for_oc(i,j) !GGGGGGGGGG
-                    ! tq(1,i,j)=TS_atm_for_oc(i,j) !GGGGGGGGGG
-                    ! tq(2,i,j)=QS_atm_for_oc(i,j) !GGGGGGGGGG
 ! heat divergence in W/m**2 (purely diagnostic)
 
         transptq(l,i,j) = rhoair*hatmbl(l)*cpa*(tq(l,i,j) - tq1(l,i,j))/(dtatm*rsc/usc)

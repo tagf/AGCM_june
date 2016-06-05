@@ -36,11 +36,6 @@
             runoff(i,j) = 0.
          enddo
       enddo
-      do i=1,imax
-         do j=1,jmax
-!c****           write (555,'(2i3,e12.3)') i,j, tq1(1,i,j)
-         enddo
-      enddo
 
 !****** for global heat source diagnostic (sb diaga.f)
       ghs=0.

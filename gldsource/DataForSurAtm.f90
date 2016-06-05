@@ -1,4 +1,4 @@
-! DataForSurAtm.f - GLDSTN Atmosphere data for surfer lat lon  /10/2008
+! DataForSurAtm.f - GLDSTN Atmosphere data for surfer lat lon  /10/2015
 	!map  -260 - +180 longitude    ####################
 	!“очки сетки расположены в полуцелых значени€х:
 !i,j,=0, 0.5, 1.5, Е,35.5, 36.0(или 72)- чтобы границы €чеек проходили
@@ -30,15 +30,15 @@
       enddo
 
        do i=0,imax+1
-	  plot1(i,0)=plot1(i,1) !south pole
-	  plot1(i,jmax+1)=plot1(i,jmax) !north pole
+	    plot1(i,0)=plot1(i,1) !south pole
+	    plot1(i,jmax+1)=plot1(i,jmax) !north pole
        enddo
        do j=0,jmax+1
-	  plot1(0,j)=plot1(1,j)  !left border
-	  plot1(imax+1,j)=plot1(imax,j) ! right border
+	    plot1(0,j)=plot1(imax,j)  !left border
+	    plot1(imax+1,j)=plot1(1,j) ! right border
        enddo
 
-      open(20,file=trim(path_results)//lout//'.'//trim(name)//id_mnth)
+  open(20,file=trim(path_results)//lout//'.'//trim(name)//id_mnth,status='REPLACE')
 
       write(20,*) 'gldst: ',trim(name)
 ! write(6,*) 'gldst: ',trim(name)
@@ -51,15 +51,15 @@
       dlon=360./real(imax)
 
       do j=0,jmax+1   !from -260 to +100 lon
-	 arg=amin1(2./jmax*(j-0.5)-1.,1.)
-	 if (j==0) arg=-1.
-	 if (j==jmax+1) arg=1.
+	   arg=amin1(2./jmax*(j-0.5)-1.,1.)
+	   if (j==0) arg=-1.
+	   if (j==jmax+1) arg=1.
 
-        write(20,1 ) dlon*0.-260.,180.*asin(arg)/pi,plot1(0,j)
+         write(20,1) dlon*0.-260.,180.*asin(arg)/pi,plot1(0,j)
        do i=1,imax
-         write(20,1 ) dlon*(i-0.5)-260.,180.*asin(arg)/pi,plot1(i,j)
+         write(20,1) dlon*(i-0.5)-260.,180.*asin(arg)/pi,plot1(i,j)
        enddo
-        write(20,1 ) dlon*imax-260.,180.*asin(arg)/pi,plot1(imax+1,j)
+         write(20,1) dlon*imax-260.,180.*asin(arg)/pi,plot1(imax+1,j)
       enddo
    1  format (1x, f7.2,',',f7.2,',',f9.3)
 
